@@ -25,6 +25,7 @@ venv.bak/
 
 # Celery
 celerybeat-schedule
+celerybeat-schedule.bak
 celerybeat.pid
 
 # VS Code
