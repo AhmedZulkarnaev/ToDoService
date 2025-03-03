@@ -3,10 +3,9 @@ from rest_framework.routers import DefaultRouter
 from .views import TaskViewSet, CategoryViewSet
 
 router = DefaultRouter()
-router.register(r'tasks', TaskViewSet)
-router.register(r'categories', CategoryViewSet)
-
+router.register(r'tasks', TaskViewSet, basename='task')
+router.register(r'categories', CategoryViewSet, basename='category')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
 ]

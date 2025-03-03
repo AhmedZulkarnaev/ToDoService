@@ -1,13 +1,11 @@
-import hashlib
 import time
-import random
+import hashlib
 
 
-def generate_unique_id():
+def generate_pk():
     """
-    Генерирует уникальный первичный ключ, используя текущее время и
-    случайное число.
-    Возвращает SHA-256 хэш от объединенной строки.
+    Генерирует строковый первичный ключ на основе хэша текущего времени.
+    (Ограничения: не используется UUID, random, стандартные функции Postgres или целочисленные автоинкременты.)
     """
-    unique_string = f"{time.time()}{random.randint(1000, 9999)}"
-    return hashlib.sha256(unique_string.encode()).hexdigest()
+    now = str(time.time())
+    return hashlib.sha256(now.encode('utf-8')).hexdigest()[:16]

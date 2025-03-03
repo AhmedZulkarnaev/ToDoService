@@ -1,25 +1,28 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.throttling import UserRateThrottle
+from rest_framework import viewsets, permissions
 from todo.models import Task, Category
-from todo.api.serializers import TaskSerializer, CategorySerializer
+from .serializers import TaskSerializer, CategorySerializer
+
+
+class IsOwner(permissions.BasePermission):
+    """
+    Проверка, что пользователь является владельцем объекта.
+    """
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
 
 
 class TaskViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet для модели Task.
-    """
-    queryset = Task.objects.all().order_by('category__name')
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated]
-    throttle_classes = [UserRateThrottle]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user).prefetch_related('categories')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet для модели Category.
-    """
-    queryset = Category.objects.all().order_by('name')
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
-    throttle_classes = [UserRateThrottle]
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Category.objects.all()
